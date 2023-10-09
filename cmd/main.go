@@ -20,7 +20,7 @@ func main() {
 	db.Debug().AutoMigrate(domain.Task{})
 
 	taskRepo := repository.NewTaskRepo(db)
-	taskService := application.NewTaskService(&taskRepo)
+	taskService := application.NewTaskService(taskRepo)
 	taskHandler := customHTTP.NewTaskHandler(taskService)
 
 	var PORT = ":8081"
