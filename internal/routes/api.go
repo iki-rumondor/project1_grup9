@@ -13,7 +13,7 @@ func StartTodoServer(handler *customHTTP.TaskHandler) *gin.Engine{
 		v1.GET("/todos")
 		v1.POST("/todos", handler.CreateTask)
 		v1.GET("/todos/:id")
-		v1.PUT("/todos/:id")
+		v1.PUT("/todos/:id", handler.UpdateTask)
 		v1.DELETE("/todos/:id")
 	}
 

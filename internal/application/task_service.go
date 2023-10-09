@@ -28,3 +28,19 @@ func (s *TaskService) CreateTask(body *request.CreateTask) error{
 	
 	return nil
 }
+
+func (s *TaskService) UpdateTask(body *request.UpdateTask) error{
+
+	task, err := s.Repo.FindByID(body.ID)
+	if err != nil{
+		return err
+	}
+
+	task.Description = body.Description
+
+	if err := s.Repo.Upsert(task); err != nil{
+		return err
+	}
+	
+	return nil
+}
