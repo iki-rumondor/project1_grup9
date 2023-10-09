@@ -8,12 +8,14 @@ import (
 func StartTodoServer(handler *customHTTP.TaskHandler) *gin.Engine{
 	route := gin.Default()
 
-	route.Group("/api/v1")
-	route.GET("/todos")
-	route.POST("/todos")
-	route.GET("/todos/:id")
-	route.PUT("/todos/:id")
-	route.DELETE("/todos/:id")
+	v1 := route.Group("/api/v1")
+	{
+		v1.GET("/todos")
+		v1.POST("/todos", handler.CreateTask)
+		v1.GET("/todos/:id")
+		v1.PUT("/todos/:id")
+		v1.DELETE("/todos/:id")
+	}
 
 	return route
 }
