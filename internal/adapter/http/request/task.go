@@ -1,12 +1,10 @@
 package request
 
-type CreateTask struct{
+type CreateTask struct {
 	Description string `json:"description" valid:"required~description is required"`
 }
 
-type UpdateTask struct{
-	ID uint
+type UpdateTask struct {
+	ID          uint
 	Description string `json:"description" valid:"required~description is required"`
 }
-
-
