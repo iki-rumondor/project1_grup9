@@ -15,42 +15,14 @@ func NewTaskRepo(db *gorm.DB) TaskRepository {
 	}
 }
 
-func (r TaskRepoImplementation) GetAll() ([]domain.Task, error) {
-    var tasks []domain.Task
-    result := r.db.Find(&tasks)
-    if result.Error != nil {
-        return nil, result.Error
-    }
-    return tasks, nil
-}
+func (r TaskRepoImplementation) FindAll() ([]domain.Task, error) {
+	var tasks []domain.Task
 
-func (r TaskRepoImplementation) GetByID(id uint) (*domain.Task, error) {
-	var task domain.Task
-	result := r.db.First(&task, id)
-	if result.Error != nil {
-		return nil, result.Error
+	if err := r.db.Find(&tasks).Error; err != nil {
+		return nil, err
 	}
-	return &task, nil
-}
 
-func (r TaskRepoImplementation) Delete(id uint) (*domain.Task, error) {
-	var task domain.Task
-	result := r.db.First(&task, id)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-	
-	deleteResult := r.db.Delete(&task, id)
-    if deleteResult.Error != nil {
-        return nil, deleteResult.Error
-    }
-
-	return &task, nil
-
-}
-
-func (r *TaskRepoImplementation) Upsert(task *domain.Task) error {
-	return r.db.Save(task).Error
+	return tasks, nil
 }
 
 func (r *TaskRepoImplementation) FindByID(id uint) (*domain.Task, error) {
@@ -63,3 +35,10 @@ func (r *TaskRepoImplementation) FindByID(id uint) (*domain.Task, error) {
 	return &task, nil
 }
 
+func (r *TaskRepoImplementation) Upsert(task *domain.Task) error {
+	return r.db.Save(task).Error
+}
+
+func (r *TaskRepoImplementation) Delete(task *domain.Task) error {
+	return r.db.Delete(task, "id = ?", task.ID).Error
+}
