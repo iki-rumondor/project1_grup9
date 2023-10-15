@@ -13,6 +13,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// TaskHandler handles HTTP requests related to tasks.
 type TaskHandler struct {
 	Service *application.TaskService
 }
@@ -23,6 +24,15 @@ func NewTaskHandler(service *application.TaskService) *TaskHandler {
 	}
 }
 
+// GetAllTasks godoc
+// @Summary Get all tasks
+// @Description Retrieve a list of all tasks.
+// @Tags Task
+// @Accept json
+// @Produce json
+// @Success 200 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/todos [get]
 func (h *TaskHandler) GetAllTasks(c *gin.Context) {
 	tasks, err := h.Service.GetAllTasks()
 	if err != nil {
@@ -38,6 +48,18 @@ func (h *TaskHandler) GetAllTasks(c *gin.Context) {
 	})
 }
 
+// GetTaskByID godoc
+// @Summary Get a task by ID
+// @Description Retrieve a task by its unique identifier.
+// @Tags Task
+// @Accept json
+// @Produce json
+// @Param id path int true "Task ID" Format(int64)
+// @Success 200 {object} gin.H
+// @Failure 400 {object} gin.H
+// @Failure 404 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/todos/{id} [get]
 func (h *TaskHandler) GetTaskByID(c *gin.Context) {
 	taskID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -70,6 +92,17 @@ func (h *TaskHandler) GetTaskByID(c *gin.Context) {
 	})
 }
 
+// DeleteTask godoc
+// @Summary Delete a task by ID
+// @Description Delete a task by its unique identifier.
+// @Tags Task
+// @Accept json
+// @Produce json
+// @Param id path int true "Task ID" Format(int64)
+// @Success 200 {object} gin.H
+// @Failure 400 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/todos/{id} [delete]
 func (h *TaskHandler) DeleteTask(c *gin.Context) {
 
 	taskID, err := strconv.Atoi(c.Param("id"))
@@ -94,6 +127,17 @@ func (h *TaskHandler) DeleteTask(c *gin.Context) {
 	})
 }
 
+// CreateTask godoc
+// @Summary Create a new task
+// @Description Create a new task with the provided data.
+// @Tags Task
+// @Accept json
+// @Produce json
+// @Param body body request.CreateTask true "Task Data"
+// @Success 200 {object} gin.H
+// @Failure 400 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/todos [post]
 func (h *TaskHandler) CreateTask(c *gin.Context) {
 	var body request.CreateTask
 
@@ -126,6 +170,18 @@ func (h *TaskHandler) CreateTask(c *gin.Context) {
 	})
 }
 
+// UpdateTask godoc
+// @Summary Update an existing task
+// @Description Update an existing task with the provided data.
+// @Tags Task
+// @Accept json
+// @Produce json
+// @Param id path int true "Task ID" Format(int64)
+// @Param body body request.UpdateTask true "Updated Task Data"
+// @Success 200 {object} gin.H
+// @Failure 400 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/todos/{id} [put]
 func (h *TaskHandler) UpdateTask(c *gin.Context) {
 	var body request.UpdateTask
 
