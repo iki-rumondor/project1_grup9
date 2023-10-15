@@ -18,10 +18,10 @@ var (
 		Description: "task description 1",
 		IsCompleted: false,
 	}
-	reqCreateTask request.CreateTask = request.CreateTask{
+	reqCreateTask request.Task = request.Task{
 		Description: "task description 1",
 	}
-	reqUpdateTask request.UpdateTask = request.UpdateTask{
+	reqUpdateTask request.TaskWithID = request.TaskWithID{
 		ID: 1,
 		Description: "task description 1",
 	}

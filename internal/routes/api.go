@@ -3,35 +3,42 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 	customHTTP "github.com/iki-rumondor/project1_grup9/internal/adapter/http"
+	docs "github.com/iki-rumondor/project1_grup9/docs"
+	ginSwagger "github.com/swaggo/gin-swagger"
+ 	swagFiles "github.com/swaggo/files" 
+
 )
 
-// @title API
-// @version 1
-// @Summary Start the Todo API server
-// @Description Initialize the server and set up routes for the Todo API.
-
-// @host localhost:8080
+// @title Todo Application
+// @version 1.0
+// @description This is a todo list management application.
+// @host localhost:8081
 // @BasePath /api/v1
+
 func StartTodoServer(handler *customHTTP.TaskHandler) *gin.Engine {
 	route := gin.Default()
 
+	docs.SwaggerInfo.BasePath = "/api/v1"
 	v1 := route.Group("/api/v1")
 	{
 		// FindAll
-		v1.GET("/todos", handler.GetAllTasks)
+		v1.GET("/tasks", handler.GetAllTasks)
 
 		// Create
-		v1.POST("/todos", handler.CreateTask)
+		v1.POST("/tasks", handler.CreateTask)
 
 		// FindByID
-		v1.GET("/todos/:id", handler.GetTaskByID)
+		v1.GET("/tasks/:id", handler.GetTaskByID)
 
 		// Update
-		v1.PUT("/todos/:id", handler.UpdateTask)
+		v1.PUT("/tasks/:id", handler.UpdateTask)
 
 		// Delete
-		v1.DELETE("/todos/:id", handler.DeleteTask)
+		v1.DELETE("/tasks/:id", handler.DeleteTask)
+
 	}
+
+	route.GET("/swagger/*any", ginSwagger.WrapHandler(swagFiles.Handler))
 
 	return route
 }

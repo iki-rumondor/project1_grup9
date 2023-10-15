@@ -66,7 +66,7 @@ func (s *TaskService) DeleteTask(id uint) error {
 	return nil
 }
 
-func (s *TaskService) CreateTask(body *request.CreateTask) error {
+func (s *TaskService) CreateTask(body *request.Task) error {
 	task := domain.Task{
 		Description: body.Description,
 		IsCompleted: false,
@@ -79,7 +79,7 @@ func (s *TaskService) CreateTask(body *request.CreateTask) error {
 	return nil
 }
 
-func (s *TaskService) UpdateTask(body *request.UpdateTask) error {
+func (s *TaskService) UpdateTask(body *request.TaskWithID) error {
 
 	task, err := s.Repo.FindByID(body.ID)
 	if err != nil {

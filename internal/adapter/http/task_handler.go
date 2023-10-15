@@ -18,6 +18,10 @@ type TaskHandler struct {
 	Service *application.TaskService
 }
 
+type responseMessage struct {
+	Message string `json:"message"`
+}
+
 func NewTaskHandler(service *application.TaskService) *TaskHandler {
 	return &TaskHandler{
 		Service: service,
@@ -27,18 +31,17 @@ func NewTaskHandler(service *application.TaskService) *TaskHandler {
 // GetAllTasks godoc
 // @Summary Get all tasks
 // @Description Retrieve a list of all tasks.
-// @Tags Task
+// @Tags tasks
 // @Accept json
 // @Produce json
-// @Success 200 {object} gin.H
-// @Failure 500 {object} gin.H
-// @Router /api/v1/todos [get]
+// @Success 200 {object} []response.Task
+// @Failure 500 {object} responseMessage
+// @Router /tasks [get]
 func (h *TaskHandler) GetAllTasks(c *gin.Context) {
 	tasks, err := h.Service.GetAllTasks()
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error":   "failed to get all tasks",
-			"message": err.Error(),
+		c.AbortWithStatusJSON(http.StatusInternalServerError, responseMessage{
+			Message: "failed to get all tasks",
 		})
 		return
 	}
@@ -51,37 +54,34 @@ func (h *TaskHandler) GetAllTasks(c *gin.Context) {
 // GetTaskByID godoc
 // @Summary Get a task by ID
 // @Description Retrieve a task by its unique identifier.
-// @Tags Task
+// @Tags tasks
 // @Accept json
 // @Produce json
-// @Param id path int true "Task ID" Format(int64)
-// @Success 200 {object} gin.H
-// @Failure 400 {object} gin.H
-// @Failure 404 {object} gin.H
-// @Failure 500 {object} gin.H
-// @Router /api/v1/todos/{id} [get]
+// @Param id path uint true "Task ID"
+// @Success 200 {object} response.Task
+// @Failure 500 {object} responseMessage
+// @Failure 404 {object} responseMessage
+// @Router /tasks/{id} [get]
 func (h *TaskHandler) GetTaskByID(c *gin.Context) {
 	taskID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error":   "task id is not valid",
-			"message": err.Error(),
+		c.AbortWithStatusJSON(http.StatusBadRequest, responseMessage{
+			Message: "task id is not valid",
 		})
 		return
 	}
 
 	task, err := h.Service.GetByTaskID(uint(taskID))
 	if errors.Is(gorm.ErrRecordNotFound, err) {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{
-			"message": fmt.Sprintf("task with id %d is not found", taskID),
+		c.AbortWithStatusJSON(http.StatusNotFound, responseMessage{
+			Message: fmt.Sprintf("task with id %d is not found", taskID),
 		})
 		return
 	}
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error":   fmt.Sprintf("failed to get task with id %d", taskID),
-			"message": err.Error(),
+		c.AbortWithStatusJSON(http.StatusInternalServerError, responseMessage{
+			Message: fmt.Sprintf("failed to get task with id %d", taskID),
 		})
 		return
 	}
@@ -95,132 +95,141 @@ func (h *TaskHandler) GetTaskByID(c *gin.Context) {
 // DeleteTask godoc
 // @Summary Delete a task by ID
 // @Description Delete a task by its unique identifier.
-// @Tags Task
+// @Tags tasks
 // @Accept json
 // @Produce json
-// @Param id path int true "Task ID" Format(int64)
-// @Success 200 {object} gin.H
-// @Failure 400 {object} gin.H
-// @Failure 500 {object} gin.H
-// @Router /api/v1/todos/{id} [delete]
+// @Param id path int true "Task ID"
+// @Success 200 {object} responseMessage
+// @Failure 400 {object} responseMessage
+// @Failure 500 {object} responseMessage
+// @Router /tasks/{id} [delete]
 func (h *TaskHandler) DeleteTask(c *gin.Context) {
 
 	taskID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error":   "task id is not valid",
-			"message": err.Error(),
+		c.AbortWithStatusJSON(http.StatusBadRequest, responseMessage{
+			Message: "task id is not valid",
 		})
 		return
 	}
 
-	if err := h.Service.DeleteTask(uint(taskID)); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error":   fmt.Sprintf("failed to update task with id %d", taskID),
-			"message": err.Error(),
+	err = h.Service.DeleteTask(uint(taskID))
+
+	if errors.Is(gorm.ErrRecordNotFound, err) {
+		c.AbortWithStatusJSON(http.StatusBadRequest, responseMessage{
+			Message: fmt.Sprintf("task with id %d is not found", taskID),
 		})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
-		"message": fmt.Sprintf("task with id %d has been deleted successfully", taskID),
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, responseMessage{
+			Message: fmt.Sprintf("something wrong when delete task with id %d", taskID),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, responseMessage{
+		Message: fmt.Sprintf("task with id %d has been deleted successfully", taskID),
 	})
 }
 
 // CreateTask godoc
 // @Summary Create a new task
 // @Description Create a new task with the provided data.
-// @Tags Task
+// @Tags tasks
 // @Accept json
 // @Produce json
-// @Param body body request.CreateTask true "Task Data"
-// @Success 200 {object} gin.H
-// @Failure 400 {object} gin.H
-// @Failure 500 {object} gin.H
-// @Router /api/v1/todos [post]
+// @Param request.Task body request.Task true "create task"
+// @Success 201 {object} responseMessage
+// @Failure 400 {object} responseMessage
+// @Failure 500 {object} responseMessage
+// @Router /tasks [post]
 func (h *TaskHandler) CreateTask(c *gin.Context) {
-	var body request.CreateTask
+	var body request.Task
 
 	if err := c.BindJSON(&body); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error":   "failed to parse request body",
-			"message": err.Error(),
+		c.AbortWithStatusJSON(http.StatusBadRequest, responseMessage{
+			Message: "failed to parse request body",
 		})
 		return
 	}
 
 	if _, err := govalidator.ValidateStruct(&body); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error":   "request body is not valid",
-			"message": err.Error(),
+		c.AbortWithStatusJSON(http.StatusBadRequest, responseMessage{
+			Message: "request body is not valid",
 		})
 		return
 	}
 
 	if err := h.Service.CreateTask(&body); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error":   "failed to create new task",
-			"message": err.Error(),
+		c.AbortWithStatusJSON(http.StatusInternalServerError, responseMessage{
+			Message: "failed to create new task",
 		})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
-		"message": "new task has been created successfully",
+	c.JSON(http.StatusCreated, responseMessage{
+		Message: "new task has been created successfully",
 	})
 }
 
 // UpdateTask godoc
 // @Summary Update an existing task
 // @Description Update an existing task with the provided data.
-// @Tags Task
+// @Tags tasks
 // @Accept json
 // @Produce json
-// @Param id path int true "Task ID" Format(int64)
-// @Param body body request.UpdateTask true "Updated Task Data"
-// @Success 200 {object} gin.H
-// @Failure 400 {object} gin.H
-// @Failure 500 {object} gin.H
-// @Router /api/v1/todos/{id} [put]
+// @Param id path int true "Task ID"
+// @Param request.Task body request.Task true "Updated Task Data"
+// @Success 200 {object} responseMessage
+// @Failure 400 {object} responseMessage
+// @Failure 500 {object} responseMessage
+// @Router /tasks/{id} [put]
 func (h *TaskHandler) UpdateTask(c *gin.Context) {
-	var body request.UpdateTask
+	var body request.TaskWithID
 
 	if err := c.BindJSON(&body); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error":   "failed to parse request body",
-			"message": err.Error(),
+		c.AbortWithStatusJSON(http.StatusBadRequest, responseMessage{
+			Message: "failed to parse request body",
 		})
 		return
 	}
 
 	if _, err := govalidator.ValidateStruct(&body); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error":   "request body is not valid",
-			"message": err.Error(),
+		c.AbortWithStatusJSON(http.StatusBadRequest, responseMessage{
+			Message: "request body is not valid",
 		})
 		return
 	}
 
 	taskID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error":   "task id is not valid",
-			"message": err.Error(),
+		c.AbortWithStatusJSON(http.StatusBadRequest, responseMessage{
+			Message: "task id is not valid",
 		})
 		return
 	}
 
 	body.ID = uint(taskID)
 
-	if err := h.Service.UpdateTask(&body); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error":   fmt.Sprintf("failed to update task with id %d", taskID),
-			"message": err.Error(),
+	err = h.Service.UpdateTask(&body)
+
+	if errors.Is(gorm.ErrRecordNotFound, err) {
+		c.AbortWithStatusJSON(http.StatusBadRequest, responseMessage{
+			Message: fmt.Sprintf("task with id %d is not found", taskID),
 		})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
-		"message": fmt.Sprintf("task with id %d has been updated successfully", taskID),
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, responseMessage{
+			Message: fmt.Sprintf("something wrong when update task with id %d", taskID),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, responseMessage{
+		Message: fmt.Sprintf("task with id %d has been updated successfully", taskID),
 	})
 }

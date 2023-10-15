@@ -1,0 +1,172 @@
+basePath: /api/v1
+definitions:
+  customHTTP.responseMessage:
+    properties:
+      message:
+        type: string
+    type: object
+  request.Task:
+    properties:
+      description:
+        type: string
+    type: object
+  response.Task:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      is_completed:
+        type: boolean
+      updated_at:
+        type: string
+    type: object
+host: localhost:8081
+info:
+  contact: {}
+  description: This is a todo list management application.
+  title: Todo Application
+  version: "1.0"
+paths:
+  /tasks:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of all tasks.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/response.Task'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/customHTTP.responseMessage'
+      summary: Get all tasks
+      tags:
+      - tasks
+    post:
+      consumes:
+      - application/json
+      description: Create a new task with the provided data.
+      parameters:
+      - description: create task
+        in: body
+        name: request.Task
+        required: true
+        schema:
+          $ref: '#/definitions/request.Task'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/customHTTP.responseMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/customHTTP.responseMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/customHTTP.responseMessage'
+      summary: Create a new task
+      tags:
+      - tasks
+  /tasks/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a task by its unique identifier.
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/customHTTP.responseMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/customHTTP.responseMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/customHTTP.responseMessage'
+      summary: Delete a task by ID
+      tags:
+      - tasks
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a task by its unique identifier.
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Task'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/customHTTP.responseMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/customHTTP.responseMessage'
+      summary: Get a task by ID
+      tags:
+      - tasks
+    put:
+      consumes:
+      - application/json
+      description: Update an existing task with the provided data.
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated Task Data
+        in: body
+        name: request.Task
+        required: true
+        schema:
+          $ref: '#/definitions/request.Task'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/customHTTP.responseMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/customHTTP.responseMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/customHTTP.responseMessage'
+      summary: Update an existing task
+      tags:
+      - tasks
+swagger: "2.0"
