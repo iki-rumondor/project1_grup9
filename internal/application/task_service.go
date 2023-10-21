@@ -27,6 +27,7 @@ func (s *TaskService) GetAllTasks() ([]*response.Task, error) {
 
 	for _, task := range tasks {
 		res = append(res, &response.Task{
+			ID:          task.ID,
 			Description: task.Description,
 			IsCompleted: task.IsCompleted,
 			CreatedAt:   task.CreatedAt,
@@ -44,6 +45,7 @@ func (s *TaskService) GetByTaskID(id uint) (*response.Task, error) {
 	}
 
 	res := response.Task{
+		ID:          task.ID,
 		Description: task.Description,
 		IsCompleted: task.IsCompleted,
 		CreatedAt:   task.CreatedAt,

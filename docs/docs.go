@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/tasks": {
+        "/todos": {
             "get": {
                 "description": "Retrieve a list of all tasks.",
                 "consumes": [
@@ -25,7 +25,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "tasks"
+                    "todos"
                 ],
                 "summary": "Get all tasks",
                 "responses": {
@@ -55,7 +55,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "tasks"
+                    "todos"
                 ],
                 "summary": "Create a new task",
                 "parameters": [
@@ -91,7 +91,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/tasks/{id}": {
+        "/todos/{id}": {
             "get": {
                 "description": "Retrieve a task by its unique identifier.",
                 "consumes": [
@@ -101,7 +101,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "tasks"
+                    "todos"
                 ],
                 "summary": "Get a task by ID",
                 "parameters": [
@@ -143,7 +143,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "tasks"
+                    "todos"
                 ],
                 "summary": "Update an existing task",
                 "parameters": [
@@ -194,7 +194,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "tasks"
+                    "todos"
                 ],
                 "summary": "Delete a task by ID",
                 "parameters": [
@@ -254,6 +254,9 @@ const docTemplate = `{
                 },
                 "description": {
                     "type": "string"
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "is_completed": {
                     "type": "boolean"
