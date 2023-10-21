@@ -22,19 +22,19 @@ func StartTodoServer(handler *customHTTP.TaskHandler) *gin.Engine {
 	v1 := route.Group("/api/v1")
 	{
 		// FindAll
-		v1.GET("/tasks", handler.GetAllTasks)
+		v1.GET("/todos", handler.GetAllTasks)
 
 		// Create
-		v1.POST("/tasks", handler.CreateTask)
+		v1.POST("/todos", handler.CreateTask)
 
 		// FindByID
-		v1.GET("/tasks/:id", handler.GetTaskByID)
+		v1.GET("/todos/:id", handler.GetTaskByID)
 
 		// Update
-		v1.PUT("/tasks/:id", handler.UpdateTask)
+		v1.PUT("/todos/:id", handler.UpdateTask)
 
 		// Delete
-		v1.DELETE("/tasks/:id", handler.DeleteTask)
+		v1.DELETE("/todos/:id", handler.DeleteTask)
 
 	}
 
