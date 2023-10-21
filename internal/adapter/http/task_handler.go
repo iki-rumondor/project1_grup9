@@ -31,12 +31,12 @@ func NewTaskHandler(service *application.TaskService) *TaskHandler {
 // GetAllTasks godoc
 // @Summary Get all tasks
 // @Description Retrieve a list of all tasks.
-// @Tags tasks
+// @Tags todos
 // @Accept json
 // @Produce json
 // @Success 200 {object} []response.Task
 // @Failure 500 {object} responseMessage
-// @Router /tasks [get]
+// @Router /todos [get]
 func (h *TaskHandler) GetAllTasks(c *gin.Context) {
 	tasks, err := h.Service.GetAllTasks()
 	if err != nil {
@@ -54,14 +54,14 @@ func (h *TaskHandler) GetAllTasks(c *gin.Context) {
 // GetTaskByID godoc
 // @Summary Get a task by ID
 // @Description Retrieve a task by its unique identifier.
-// @Tags tasks
+// @Tags todos
 // @Accept json
 // @Produce json
 // @Param id path uint true "Task ID"
 // @Success 200 {object} response.Task
 // @Failure 500 {object} responseMessage
 // @Failure 404 {object} responseMessage
-// @Router /tasks/{id} [get]
+// @Router /todos/{id} [get]
 func (h *TaskHandler) GetTaskByID(c *gin.Context) {
 	taskID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -95,14 +95,14 @@ func (h *TaskHandler) GetTaskByID(c *gin.Context) {
 // DeleteTask godoc
 // @Summary Delete a task by ID
 // @Description Delete a task by its unique identifier.
-// @Tags tasks
+// @Tags todos
 // @Accept json
 // @Produce json
 // @Param id path int true "Task ID"
 // @Success 200 {object} responseMessage
 // @Failure 400 {object} responseMessage
 // @Failure 500 {object} responseMessage
-// @Router /tasks/{id} [delete]
+// @Router /todos/{id} [delete]
 func (h *TaskHandler) DeleteTask(c *gin.Context) {
 
 	taskID, err := strconv.Atoi(c.Param("id"))
@@ -137,14 +137,14 @@ func (h *TaskHandler) DeleteTask(c *gin.Context) {
 // CreateTask godoc
 // @Summary Create a new task
 // @Description Create a new task with the provided data.
-// @Tags tasks
+// @Tags todos
 // @Accept json
 // @Produce json
 // @Param request.Task body request.Task true "create task"
 // @Success 201 {object} responseMessage
 // @Failure 400 {object} responseMessage
 // @Failure 500 {object} responseMessage
-// @Router /tasks [post]
+// @Router /todos [post]
 func (h *TaskHandler) CreateTask(c *gin.Context) {
 	var body request.Task
 
@@ -177,7 +177,7 @@ func (h *TaskHandler) CreateTask(c *gin.Context) {
 // UpdateTask godoc
 // @Summary Update an existing task
 // @Description Update an existing task with the provided data.
-// @Tags tasks
+// @Tags todos
 // @Accept json
 // @Produce json
 // @Param id path int true "Task ID"
@@ -185,7 +185,7 @@ func (h *TaskHandler) CreateTask(c *gin.Context) {
 // @Success 200 {object} responseMessage
 // @Failure 400 {object} responseMessage
 // @Failure 500 {object} responseMessage
-// @Router /tasks/{id} [put]
+// @Router /todos/{id} [put]
 func (h *TaskHandler) UpdateTask(c *gin.Context) {
 	var body request.TaskWithID
 
