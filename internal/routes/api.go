@@ -12,7 +12,7 @@ import (
 // @title Todo Application
 // @version 1.0
 // @description This is a todo list management application.
-// @host localhost:8081
+// @host https://project1grup9-production.up.railway.app
 // @BasePath /api/v1
 
 func StartTodoServer(handler *customHTTP.TaskHandler) *gin.Engine {
