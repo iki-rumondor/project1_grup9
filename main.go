@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	db, err := database.NewMysqlDB()
+	db, err := database.NewPostgresDB()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
