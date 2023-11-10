@@ -6,17 +6,18 @@ import (
 	"github.com/iki-rumondor/project1_grup9/internal/adapter/database"
 	customHTTP "github.com/iki-rumondor/project1_grup9/internal/adapter/http"
 	"github.com/iki-rumondor/project1_grup9/internal/application"
+	"github.com/iki-rumondor/project1_grup9/internal/domain"
 	"github.com/iki-rumondor/project1_grup9/internal/repository"
 	"github.com/iki-rumondor/project1_grup9/internal/routes"
 )
 
 func main() {
-	db, err := database.NewPostgresDB()
+	db, err := database.NewMysqlDB()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	// db.Debug().AutoMigrate(domain.Task{})
+	db.Debug().AutoMigrate(domain.Task{})
 
 	taskRepo := repository.NewTaskRepo(db)
 	taskService := application.NewTaskService(taskRepo)
