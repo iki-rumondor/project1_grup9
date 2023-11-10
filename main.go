@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/iki-rumondor/project1_grup9/internal/adapter/database"
 	customHTTP "github.com/iki-rumondor/project1_grup9/internal/adapter/http"
@@ -23,6 +24,13 @@ func main() {
 	taskService := application.NewTaskService(taskRepo)
 	taskHandler := customHTTP.NewTaskHandler(taskService)
 
-	var ADDRESS = "project1grup9-production.up.railway.app"
-	routes.StartTodoServer(taskHandler).Run(ADDRESS)
+	var PORT = envPortOr("3000")
+	routes.StartTodoServer(taskHandler).Run(PORT)
 }
+
+func envPortOr(port string) string {
+	if envPort := os.Getenv("PORT"); envPort != "" {
+	  return ":" + envPort
+	}
+	return ":" + port
+  }
