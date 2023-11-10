@@ -23,6 +23,6 @@ func main() {
 	taskService := application.NewTaskService(taskRepo)
 	taskHandler := customHTTP.NewTaskHandler(taskService)
 
-	var PORT = ":8081"
-	routes.StartTodoServer(taskHandler).Run(PORT)
+	var ADDRESS = "project1grup9-production.up.railway.app"
+	routes.StartTodoServer(taskHandler).Run(ADDRESS)
 }
